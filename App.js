@@ -15,7 +15,7 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
-  View,
+  View,Button,
 } from 'react-native';
 
 import {
@@ -25,8 +25,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { DrawerActions, NavigationContainer, useNavigation } from '@react-navigation/native';
 
 function HomeScreen({ navigation }) {
   return (
@@ -48,8 +48,7 @@ function NotificationsScreen({ navigation }) {
 }
 
 const Drawer = createDrawerNavigator();
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
+
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -82,14 +81,24 @@ const App: () => Node = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
+  function CustomDrawerContent(props) {
+    const n = useNavigation()
+    return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItem
+          label="Help"
+          onPress={() => n.dispatch(DrawerActions.closeDrawer())}
+        />
+      </DrawerContentScrollView>
+    );
+  }
   return (
     <NavigationContainer>
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen name="Notifications" component={NotificationsScreen} />
-    </Drawer.Navigator>
-  </NavigationContainer>
+      <Drawer.Navigator initialRouteName="Home"  drawerContent={(props) => <CustomDrawerContent {...props} />}>
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
   
   );
 };
